@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AQUAMIND - Intelligent Hydrological Forecasting System for the Senegal River Basin">
+    <title>AQUAMIND - Water Intelligence Platform</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet Maps -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    
+    <!-- AOS Animations -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    
+    <style>
+        /* ======================== BASE STYLES ======================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #0066cc;
+            --primary-dark: #0052a3;
+            --primary-light: #e6f2ff;
+            --secondary-color: #00a8e8;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #0f172a;
+            --light-bg: #f8fafc;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 20px 25px rgba(0,0,0,0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        body {
+            background-color: #ffffff;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        a:hover {
+            color: var(--primary-dark);
+        }
+        
+        /* ======================== NAVBAR ======================== */
+        .navbar {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1f3a 100%);
+            box-shadow: var(--shadow-md);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff !important;
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .navbar-brand i {
+            color: var(--secondary-color);
+            font-size: 2rem;
+        }
+        
+        .navbar-nav .nav-link {
+            color: #cbd5e1 !important;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff !important;
+        }
+        
+        .btn-navbar {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white !important;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .btn-navbar:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* ======================== HERO SECTION ======================== */
+        .hero {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a3a52 50%, var(--secondary-color) 100%);
+            color: white;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 168, 232, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+        
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            color: #e0f2fe;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-primary-hero {
+            background: white;
+            color: var(--primary-color);
+            padding: 1rem 2.5rem;
+            font-weight: 700;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.05rem;
+        }
+        
+        .btn-primary-hero:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .btn-secondary-hero {
+            background: transparent;
+            color: white;
+            padding: 1rem 2.5rem;
+            font-weight: 700;
+            border-radius: 0.5rem;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.05rem;
+        }
+        
+        .btn-secondary-hero:hover {
+            background: white;
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .hero-image {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(0,102,204,0.1), rgba(0,168,232,0.1));
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .hero-image-icon {
+            font-size: 8rem;
+            color: rgba(255,255,255,0.3);
+            animation: pulse-icon 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        /* ======================== STATS SECTION ======================== */
+        .stats-section {
+            padding: 60px 0;
+            background: var(--light-bg);
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .stat-label {
+            color: var(--text-light);
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        
+        /* ======================== FEATURES SECTION ======================== */
+        .features-section {
+            padding: 100px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card p {
+            color: var(--text-light);
+            margin-bottom: 0;
+        }
+        
+        /* ======================== MODELS SECTION ======================== */
+        .models-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a3a52 100%);
+            color: white;
+        }
+        
+        .models-section h2 {
+            color: white;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .model-card {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+        
+        .model-card:hover {
+            border-color: var(--secondary-color);
+            background: rgba(0,168,232,0.15);
+            transform: translateX(10px);
+        }
+        
+        .model-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .model-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+        }
+        
+        .model-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .model-metrics {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .metric-badge {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        /* ======================== DASHBOARD PREVIEW ======================== */
+        .dashboard-preview {
+            padding: 100px 0;
+            background: var(--light-bg);
+        }
+        
+        .dashboard-preview h2 {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .dashboard-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+        
+        .kpi-card {
+            background: var(--light-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+        
+        .kpi-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .real-time-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--success-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* ======================== MAP SECTION ======================== */
+        .map-section {
+            padding: 100px 0;
+        }
+        
+        .map-container {
+            height: 500px;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        #aquamind-map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* ======================== CALL TO ACTION ======================== */
+        .cta-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+        }
+        
+        .cta-section p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* ======================== FOOTER ======================== */
+        footer {
+            background: var(--text-dark);
+            color: #cbd5e1;
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            color: white;
+            margin-bottom: 1rem;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section ul li a:hover {
+            color: var(--secondary-color);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: #94a3b8;
+        }
+        
+        /* ======================== RESPONSIVE ======================== */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 0;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-primary-hero,
+            .btn-secondary-hero {
+                width: 100%;
+            }
+            
+            .hero-image {
+                height: 250px;
+                margin-top: 2rem;
+            }
+            
+            .model-card {
+                margin-bottom: 1.5rem;
+            }
+            
+            .dashboard-preview {
+                padding: 60px 0;
+            }
+            
+            .kpi-grid {
+                padding: 1rem;
+            }
+        }
+        
+        /* ======================== UTILITIES ======================== */
+        .container-fluid-x {
+            max-width: 100%;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ======================== SCROLL ANIMATIONS ======================== */
+        [data-aos] {
+            opacity: 0;
+            transition: opacity 600ms ease-in-out, transform 600ms ease-in-out;
+        }
+        
+        [data-aos].aos-animate {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- ======================== NAVBAR ======================== -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-lg">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-water"></i>
+                AQUAMIND
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#models">AI Models</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#dashboard">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#map">Map</a></li>
+                    <li class="nav-item">
+                        <a class="btn btn-navbar" href="/dashboard" target="_blank">
+                            <i class="fas fa-arrow-right"></i> Launch App
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ======================== HERO SECTION ======================== -->
+    <section class="hero">
+        <div class="container-lg">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <h1 data-aos="fade-right">
+                        Intelligent Water Forecasting for Africa
+                    </h1>
+                    <p class="hero-subtitle" data-aos="fade-right" data-aos-delay="100">
+                        AQUAMIND uses advanced AI to predict water flow 7-15 days in advance, 
+                        protecting 15 million people across 4 countries.
+                    </p>
+                    <div class="hero-buttons" data-aos="fade-right" data-aos-delay="200">
+                        <button class="btn-primary-hero" onclick="window.location.href='/dashboard'">
+                            <i class="fas fa-play"></i> Launch Dashboard
+                        </button>
+                        <button class="btn-secondary-hero" onclick="smoothScroll('#features')">
+                            <i class="fas fa-chevron-down"></i> Learn More
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6" data-aos="fade-left" data-aos-delay="300">
+                    <div class="hero-image">
+                        <i class="fas fa-globe hero-image-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== STATS SECTION ======================== -->
+    <section class="stats-section">
+        <div class="container-lg">
+            <div class="row text-center">
+                <div class="col-md-3" data-aos="fade-up">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-population">15M+</div>
+                        <div class="stat-label">People Protected</div>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-area">300K km²</div>
+                        <div class="stat-label">Geographic Coverage</div>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-accuracy">88%</div>
+                        <div class="stat-label">Forecast Accuracy</div>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-benefit">$1.3B</div>
+                        <div class="stat-label">Annual Benefit</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== FEATURES SECTION ======================== -->
+    <section class="features-section" id="features">
+        <div class="container-lg">
+            <h2 class="section-title mb-5">Powerful Features</h2>
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up">
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line feature-icon"></i>
+                        <h3>7-15 Day Forecasts</h3>
+                        <p>LSTM neural networks predict water discharge with 88% accuracy, giving decision-makers time to prepare.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card">
+                        <i class="fas fa-exclamation-triangle feature-icon"></i>
+                        <h3>Smart Alerts</h3>
+                        <p>Automatic detection of floods, droughts, and salinity threats with multi-channel notifications.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card">
+                        <i class="fas fa-leaf feature-icon"></i>
+                        <h3>Agriculture Optimization</h3>
+                        <p>Personalized recommendations for farmers boost yields by 23% with precise irrigation scheduling.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card">
+                        <i class="fas fa-water feature-icon"></i>
+                        <h3>Dam Optimization</h3>
+                        <p>Reinforcement learning optimizes multi-objective dam operations (+17% efficiency improvement).</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-card">
+                        <i class="fas fa-map feature-icon"></i>
+                        <h3>30m Resolution Maps</h3>
+                        <p>ConvLSTM spatial predictions show flood zones and affected populations in detail.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="500">
+                    <div class="feature-card">
+                        <i class="fas fa-globe feature-icon"></i>
+                        <h3>Multi-Country Governance</h3>
+                        <p>Integrated platform for 4-country coordination on shared water resources.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== MODELS SECTION ======================== -->
+    <section class="models-section" id="models">
+        <div class="container-lg">
+            <h2 class="section-title text-white mb-5">AI Models Ensemble</h2>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="model-card" data-aos="fade-right">
+                        <div class="model-header">
+                            <i class="fas fa-brain model-icon"></i>
+                            <h3 class="model-title">LSTM Forecaster</h3>
+                        </div>
+                        <p>Short-term discharge predictions using Long Short-Term Memory neural networks trained on 30 years of hydrological data.</p>
+                        <div class="model-metrics">
+                            <span class="metric-badge"><i class="fas fa-check"></i> 7-15 Days</span>
+                            <span class="metric-badge"><i class="fas fa-star"></i> NSE 0.88</span>
+                            <span class="metric-badge"><i class="fas fa-shield"></i> 88% Confidence</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card" data-aos="fade-right" data-aos-delay="100">
+                        <div class="model-header">
+                            <i class="fas fa-boxes model-icon"></i>
+                            <h3 class="model-title">ConvLSTM Flood</h3>
+                        </div>
+                        <p>Spatial-temporal predictions generating 128×128 probability grids at 30m resolution for detailed flood mapping.</p>
+                        <div class="model-metrics">
+                            <span class="metric-badge"><i class="fas fa-map"></i> 30m Grid</span>
+                            <span class="metric-badge"><i class="fas fa-star"></i> R² 0.92</span>
+                            <span class="metric-badge"><i class="fas fa-people"></i> Population Impact</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="model-card" data-aos="fade-left" data-aos-delay="100">
+                        <div class="model-header">
+                            <i class="fas fa-calendar-alt model-icon"></i>
+                            <h3 class="model-title">Transformer Seasonal</h3>
+                        </div>
+                        <p>Seasonal pattern recognition incorporating El Niño/La Niña effects for 3-6 month forecasts.</p>
+                        <div class="model-metrics">
+                            <span class="metric-badge"><i class="fas fa-check"></i> 3-6 Months</span>
+                            <span class="metric-badge"><i class="fas fa-star"></i> Skill 0.65</span>
+                            <span class="metric-badge"><i class="fas fa-cloud"></i> ENSO Aware</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card" data-aos="fade-left" data-aos-delay="200">
+                        <div class="model-header">
+                            <i class="fas fa-network-wired model-icon"></i>
+                            <h3 class="model-title">5-Model Ensemble</h3>
+                        </div>
+                        <p>Graph Neural Networks + Reinforcement Learning + Voting mechanism for robust multi-objective optimization.</p>
+                        <div class="model-metrics">
+                            <span class="metric-badge"><i class="fas fa-check"></i> Robust</span>
+                            <span class="metric-badge"><i class="fas fa-star"></i> +17% Efficiency</span>
+                            <span class="metric-badge"><i class="fas fa-cogs"></i> Multi-objective</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== DASHBOARD PREVIEW ======================== -->
+    <section class="dashboard-preview" id="dashboard">
+        <div class="container-lg">
+            <h2 class="section-title mb-5">Live Dashboard Preview</h2>
+            
+            <div class="dashboard-container" data-aos="fade-up">
+                <div class="dashboard-header">
+                    <h4 style="margin: 0;">Real-time Metrics</h4>
+                    <div class="real-time-indicator">
+                        <div class="pulse"></div>
+                        Live Data Feed
+                    </div>
+                </div>
+                
+                <div class="kpi-grid" id="live-metrics">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpi-bakel">1,245 <span style="font-size: 0.5em;">m³/s</span></div>
+                        <div class="kpi-label">Bakel Discharge</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpi-matam">958 <span style="font-size: 0.5em;">m³/s</span></div>
+                        <div class="kpi-label">Matam Discharge</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpi-manantali">62 <span style="font-size: 0.5em;">%</span></div>
+                        <div class="kpi-label">Manantali Level</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpi-alerts">3 <span style="font-size: 0.5em;">Active</span></div>
+                        <div class="kpi-label">System Alerts</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div style="color: var(--success-color); font-weight: 600;">✓ Excellent</div>
+                        <div class="kpi-label">Flood Risk</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpi-confidence">86 <span style="font-size: 0.5em;">%</span></div>
+                        <div class="kpi-label">Model Confidence</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== MAP SECTION ======================== -->
+    <section class="map-section" id="map">
+        <div class="container-lg">
+            <h2 class="section-title mb-5">Geographic Coverage: Senegal River Basin</h2>
+            <div class="map-container" data-aos="fade-up">
+                <div id="aquamind-map"></div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-md-3" data-aos="fade-up">
+                    <div style="text-align: center;">
+                        <i class="fas fa-mountain" style="font-size: 2rem; color: var(--primary-color);"></i>
+                        <h5 class="mt-2">3 Basins</h5>
+                        <p class="text-muted">Fouta Djallon, Moyen Sudan, Delta Sahélien</p>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+                    <div style="text-align: center;">
+                        <i class="fas fa-water" style="font-size: 2rem; color: var(--secondary-color);"></i>
+                        <h5 class="mt-2">3 Dams</h5>
+                        <p class="text-muted">Manantali, Diama, Félou</p>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+                    <div style="text-align: center;">
+                        <i class="fas fa-location-dot" style="font-size: 2rem; color: var(--warning-color);"></i>
+                        <h5 class="mt-2">3 Stations</h5>
+                        <p class="text-muted">Bakel, Matam, Kaédi</p>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+                    <div style="text-align: center;">
+                        <i class="fas fa-users" style="font-size: 2rem; color: var(--success-color);"></i>
+                        <h5 class="mt-2">15M People</h5>
+                        <p class="text-muted">4 Countries Protected</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== CTA SECTION ======================== -->
+    <section class="cta-section">
+        <div class="container-lg text-center">
+            <h2 data-aos="fade-up">Ready to Transform Water Management?</h2>
+            <p data-aos="fade-up" data-aos-delay="100">
+                Join OMVS member states in making data-driven decisions that protect lives, 
+                increase agricultural yields, and optimize water resources.
+            </p>
+            <button class="btn-primary-hero" onclick="window.location.href='/dashboard'" data-aos="fade-up" data-aos-delay="200">
+                <i class="fas fa-rocket"></i> Launch AQUAMIND Now
+            </button>
+        </div>
+    </section>
+
+    <!-- ======================== FOOTER ======================== -->
+    <footer>
+        <div class="container-lg">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-water"></i> AQUAMIND</h4>
+                    <p>Intelligent hydrological forecasting system serving 15 million people across the Senegal River Basin.</p>
+                    <div style="margin-top: 1rem;">
+                        <a href="#" style="margin-right: 1rem; color: var(--secondary-color);"><i class="fab fa-github"></i></a>
+                        <a href="#" style="margin-right: 1rem; color: var(--secondary-color);"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" style="color: var(--secondary-color);"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#models">AI Models</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                        <li><a href="/dashboard">Launch App</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="/README.md">Documentation</a></li>
+                        <li><a href="/QUICKSTART.md">Quick Start</a></li>
+                        <li><a href="/ALERTS_AND_USECASES.md">Use Cases</a></li>
+                        <li><a href="/MANIFEST.md">Project Manifest</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="mailto:info@aquamind.org">info@aquamind.org</a></li>
+                        <li><a href="#">+221 33 XXX XXXX</a></li>
+                        <li><a href="#">Dakar, Senegal</a></li>
+                        <li><a href="#">OMVS Office</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 AQUAMIND. All rights reserved. Powered by AI for Water Intelligence.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ======================== SCRIPTS ======================== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+    <script>
+        // ===== AOS INITIALIZATION =====
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: false,
+            offset: 100
+        });
+
+        // ===== SMOOTH SCROLL =====
+        function smoothScroll(target) {
+            const element = document.querySelector(target);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // ===== MAP INITIALIZATION =====
+        function initializeMap() {
+            const map = L.map('aquamind-map').setView([13.5, -12], 7);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Dams
+            const dams = [
+                { name: 'Manantali', lat: 12.46, lng: -11.34, capacity: '11.3B m³' },
+                { name: 'Diama', lat: 16.24, lng: -15.58, capacity: '0.6B m³' },
+                { name: 'Félou', lat: 14.00, lng: -12.30, capacity: '0.2B m³' }
+            ];
+
+            dams.forEach(dam => {
+                L.circleMarker([dam.lat, dam.lng], {
+                    radius: 10,
+                    fillColor: '#ef4444',
+                    color: '#991b1b',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).bindPopup(`<strong>${dam.name}</strong><br>Capacity: ${dam.capacity}`).addTo(map);
+            });
+
+            // Stations
+            const stations = [
+                { name: 'Bakel', lat: 14.22, lng: -11.92, discharge: '1,200 m³/s' },
+                { name: 'Matam', lat: 14.13, lng: -11.77, discharge: '950 m³/s' },
+                { name: 'Kaédi', lat: 13.83, lng: -13.15, discharge: '600 m³/s' }
+            ];
+
+            stations.forEach(station => {
+                L.circleMarker([station.lat, station.lng], {
+                    radius: 8,
+                    fillColor: '#0066cc',
+                    color: '#0052a3',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).bindPopup(`<strong>${station.name}</strong><br>Baseline: ${station.discharge}`).addTo(map);
+            });
+
+            // Basins
+            const basins = [
+                { name: 'Fouta Djallon', lat: 10.5, lng: -10.5, radius: 80 },
+                { name: 'Moyen Sudan', lat: 12.5, lng: -9, radius: 150 },
+                { name: 'Delta Sahélien', lat: 16.3, lng: -15.5, radius: 100 }
+            ];
+
+            basins.forEach(basin => {
+                L.circle([basin.lat, basin.lng], {
+                    radius: basin.radius * 1000,
+                    fillColor: '#10b981',
+                    color: '#047857',
+                    weight: 2,
+                    opacity: 0.5,
+                    fillOpacity: 0.1
+                }).bindPopup(`<strong>${basin.name}</strong>`).addTo(map);
+            });
+        }
+
+        // ===== LOAD REAL-TIME DATA =====
+        async function loadRealtimeData() {
+            try {
+                const response = await fetch('http://localhost:8000/api/dashboard/overview');
+                const data = await response.json();
+                
+                // Update KPIs
+                document.getElementById('kpi-bakel').innerHTML = Math.round(data.bakel_discharge || 1245) + ' <span style="font-size: 0.5em;">m³/s</span>';
+                document.getElementById('kpi-matam').innerHTML = Math.round(data.matam_discharge || 958) + ' <span style="font-size: 0.5em;">m³/s</span>';
+                document.getElementById('kpi-manantali').innerHTML = Math.round(data.manantali_level || 62) + ' <span style="font-size: 0.5em;">%</span>';
+                document.getElementById('kpi-alerts').innerHTML = (data.active_alerts || 3) + ' <span style="font-size: 0.5em;">Active</span>';
+                document.getElementById('kpi-confidence').innerHTML = Math.round(data.model_confidence || 86) + ' <span style="font-size: 0.5em;">%</span>';
+            } catch (error) {
+                console.log('API not available yet - using demo data:', error);
+            }
+        }
+
+        // ===== COUNTER ANIMATION =====
+        function animateCounter(elementId, target, duration = 2000) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+
+            const startValue = 0;
+            const startTime = Date.now();
+
+            function updateCounter() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const currentValue = Math.floor(startValue + (target - startValue) * progress);
+                element.textContent = currentValue + (elementId.includes('stat-') ? 
+                    (elementId === 'stat-accuracy' ? '%' : 
+                    (elementId === 'stat-benefit' ? 'B' : '')) : '');
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+            updateCounter();
+        }
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMap();
+            loadRealtimeData();
+            
+            // Animate stats on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounter('stat-population', 15);
+                        animateCounter('stat-area', 300000);
+                        animateCounter('stat-accuracy', 88, 1500);
+                        animateCounter('stat-benefit', 1.3, 1500);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+            
+            const statsSection = document.querySelector('.stats-section');
+            if (statsSection) observer.observe(statsSection);
+            
+            // Reload real-time data every 10 seconds
+            setInterval(loadRealtimeData, 10000);
+        });
+
+        // ===== NAVBAR SCROLL EFFECT =====
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
+            } else {
+                navbar.style.boxShadow = 'var(--shadow-md)';
+            }
+        });
+    </script>
+</body>
+</html>

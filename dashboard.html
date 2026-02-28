@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AQUAMIND - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0084d6;
+            --secondary: #00c9e7;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --warning: #f39c12;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--light);
+            color: #333;
+        }
+
+        /* DASHBOARD HEADER */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--dark), var(--primary));
+            color: white;
+            padding: 30px 20px;
+            box-shadow: 0 4px 15px rgba(0, 132, 214, 0.2);
+        }
+
+        .dashboard-header h1 {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-header .time-info {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        /* MAIN GRID */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card-metric {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--primary);
+        }
+
+        .card-metric:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 132, 214, 0.2);
+        }
+
+        .card-metric.warning {
+            border-left-color: var(--warning);
+        }
+
+        .card-metric.danger {
+            border-left-color: var(--danger);
+        }
+
+        .card-metric.success {
+            border-left-color: var(--success);
+        }
+
+        .metric-title {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-value {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .metric-trend {
+            font-size: 0.85rem;
+            color: var(--success);
+        }
+
+        .metric-trend.negative {
+            color: var(--danger);
+        }
+
+        /* CHARTS CONTAINER */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .chart-canvas {
+            position: relative;
+            height: 300px;
+        }
+
+        /* MAP SECTION */
+        .map-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .map-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+
+        /* ALERTS SECTION */
+        .alerts-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .alerts-container h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .alert-item {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-item.critical {
+            background: #ffe6e6;
+            border-left-color: var(--danger);
+        }
+
+        .alert-item.warning {
+            background: #fff3cd;
+            border-left-color: var(--warning);
+        }
+
+        .alert-item.info {
+            background: #e7f3ff;
+            border-left-color: var(--primary);
+        }
+
+        .alert-time {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* RESPONSIVE TABLE */
+        .predictions-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+
+        .predictions-container h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .prediction-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px;
+        }
+
+        .prediction-table tr {
+            border-bottom: 1px solid #eee;
+        }
+
+        .prediction-table th {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .prediction-table td {
+            padding: 15px;
+        }
+
+        .prediction-badge {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-up {
+            background: #e8f5e9;
+            color: var(--success);
+        }
+
+        .badge-down {
+            background: #ffebee;
+            color: var(--danger);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 350px;
+            }
+
+            .dashboard-header {
+                padding: 20px;
+            }
+
+            .main-container {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .metric-value {
+                font-size: 2rem;
+            }
+
+            #map {
+                height: 250px;
+            }
+
+            .alert-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .alert-time {
+                margin-top: 10px;
+            }
+        }
+
+        /* ANIMATIONS */
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 2px solid var(--light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <div class="container-fluid">
+            <h1>
+                <i class="fas fa-brain"></i> AQUAMIND Dashboard
+            </h1>
+            <div class="time-info">
+                <i class="fas fa-calendar"></i> <span id="currentDate">-</span> | 
+                <i class="fas fa-clock"></i> <span id="currentTime">-</span> | 
+                Status: <span style="color: var(--secondary); font-weight: 700;">🟢 Opérationnel</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-container">
+        <!-- METRICS GRID -->
+        <div class="dashboard-grid">
+            <div class="card-metric">
+                <div class="metric-title">Niveau Moyen d'Eau</div>
+                <div class="metric-value" id="avgWaterLevel">--</div>
+                <div class="metric-trend">
+                    <i class="fas fa-arrow-up"></i> +2.3m depuis hier
+                </div>
+            </div>
+
+            <div class="card-metric warning">
+                <div class="metric-title">Prédiction 7 jours</div>
+                <div class="metric-value" id="prediction7d">--</div>
+                <div class="metric-trend">
+                    <i class="fas fa-info-circle"></i> Stable
+                </div>
+            </div>
+
+            <div class="card-metric success">
+                <div class="metric-title">Confiance Système</div>
+                <div class="metric-value" id="confidence">92%</div>
+                <div class="metric-trend">
+                    <i class="fas fa-check-circle"></i> Tous modèles OK
+                </div>
+            </div>
+
+            <div class="card-metric danger">
+                <div class="metric-title">Alertes Actives</div>
+                <div class="metric-value" id="alerts">3</div>
+                <div class="metric-trend">
+                    <i class="fas fa-exclamation-triangle"></i> Réview recommandée
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARTS -->
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3>
+                    <i class="fas fa-tint"></i> Niveau d'Eau - 30 Jours
+                </h3>
+                <div class="chart-canvas">
+                    <canvas id="waterLevelChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>
+                    <i class="fas fa-chart-line"></i> Prédictions Précision
+                </h3>
+                <div class="chart-canvas">
+                    <canvas id="accuracyChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>
+                    <i class="fas fa-water"></i> Distribution par Bassin
+                </h3>
+                <div class="chart-canvas">
+                    <canvas id="basinChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAP -->
+        <div class="map-container">
+            <div class="map-header">
+                <i class="fas fa-map"></i> Localisation des Stations
+            </div>
+            <div id="map"></div>
+        </div>
+
+        <!-- ALERTS -->
+        <div class="alerts-container">
+            <h3>
+                <i class="fas fa-bell"></i> Alertes et Notifications
+            </h3>
+            <div id="alertsContainer"></div>
+        </div>
+
+        <!-- PREDICTIONS TABLE -->
+        <div class="predictions-container">
+            <h3>
+                <i class="fas fa-table"></i> Prédictions Détaillées
+            </h3>
+            <table class="prediction-table">
+                <thead>
+                    <tr>
+                        <th>Jour</th>
+                        <th>Prédiction (m)</th>
+                        <th>Modèle Principal</th>
+                        <th>Confiance</th>
+                        <th>Tendance</th>
+                    </tr>
+                </thead>
+                <tbody id="predictionsBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Mise à jour de l'heure
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('fr-FR');
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Données simulées réalistes
+        const mockData = {
+            waterLevels: [245, 247, 250, 248, 252, 255, 258, 260, 258, 256, 254, 252, 250, 248, 246, 245, 243, 241, 239, 240, 242, 245, 247, 250, 252, 255, 257, 259, 260, 261],
+            predictions: [
+                { day: 'J+1', value: 247.5, model: 'LSTM', confidence: 94, trend: 'up' },
+                { day: 'J+2', value: 250.3, model: 'Transformer', confidence: 91, trend: 'up' },
+                { day: 'J+3', value: 248.1, model: 'ConvLSTM', confidence: 89, trend: 'down' },
+                { day: 'J+4', value: 245.8, model: 'GNN', confidence: 88, trend: 'down' },
+                { day: 'J+5', value: 243.5, model: 'RL', confidence: 90, trend: 'down' },
+                { day: 'J+6', value: 245.2, model: 'Ensemble', confidence: 93, trend: 'up' },
+                { day: 'J+7', value: 248.7, model: 'LSTM', confidence: 92, trend: 'up' }
+            ],
+            basins: {
+                labels: ['Fleuve Principal', 'Lac Central', 'Retenue Sud', 'Bassin Est'],
+                values: [245, 187, 156, 203]
+            },
+            alerts: [
+                { level: 'critical', message: 'Risque d\'inondation détecté - Bassin Est', time: '15:45' },
+                { level: 'warning', message: 'Sécheresse progressive - Retenue Sud', time: '14:23' },
+                { level: 'info', message: 'Maintenance prévue - Station 5', time: '10:12' }
+            ]
+        };
+
+        // Mise à jour des métriques
+        function updateMetrics() {
+            const avgWater = mockData.waterLevels.reduce((a, b) => a + b) / mockData.waterLevels.length;
+            document.getElementById('avgWaterLevel').textContent = avgWater.toFixed(1) + 'm';
+            document.getElementById('prediction7d').textContent = mockData.predictions[6].value.toFixed(1) + 'm';
+        }
+
+        // Chart 1: Water Level (Line Chart)
+        const waterCtx = document.getElementById('waterLevelChart');
+        if (waterCtx) {
+            new Chart(waterCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 30}, (_, i) => `J-${30-i}`),
+                    datasets: [{
+                        label: 'Niveau d\'eau (m)',
+                        data: mockData.waterLevels,
+                        borderColor: '#0084d6',
+                        backgroundColor: 'rgba(0, 132, 214, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#00c9e7',
+                        pointBorderColor: '#0084d6',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 235,
+                            max: 265
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 2: Accuracy (Bar Chart)
+        const accuracyCtx = document.getElementById('accuracyChart');
+        if (accuracyCtx) {
+            new Chart(accuracyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['LSTM', 'Transformer', 'ConvLSTM', 'GNN', 'RL'],
+                    datasets: [{
+                        label: 'Précision (%)',
+                        data: [94, 91, 89, 88, 90],
+                        backgroundColor: [
+                            '#0084d6',
+                            '#00c9e7',
+                            '#2ecc71',
+                            '#f39c12',
+                            '#e74c3c'
+                        ],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                }
+            });
+        }
+
+        // Chart 3: Basins Distribution (Pie Chart)
+        const basinCtx = document.getElementById('basinChart');
+        if (basinCtx) {
+            new Chart(basinCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: mockData.basins.labels,
+                    datasets: [{
+                        data: mockData.basins.values,
+                        backgroundColor: [
+                            '#0084d6',
+                            '#00c9e7',
+                            '#2ecc71',
+                            '#f39c12'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        // Map initialization
+        const map = L.map('map').setView([0, 20], 4);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Add markers
+        const stations = [
+            { lat: -1.95, lng: 29.87, name: 'Lac Kivu', level: 245 },
+            { lat: -4.03, lng: 21.76, name: 'Fleuve Congo', level: 187 },
+            { lat: -11.28, lng: 25.09, name: 'Zambèze', level: 156 },
+            { lat: 6.80, lng: 31.30, name: 'Nil', level: 203 }
+        ];
+
+        stations.forEach(station => {
+            const marker = L.circleMarker([station.lat, station.lng], {
+                radius: 8,
+                fillColor: '#0084d6',
+                color: '#00c9e7',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+
+            marker.bindPopup(`<strong>${station.name}</strong><br>Niveau: ${station.level}m`);
+        });
+
+        // Alerts
+        const alertsContainer = document.getElementById('alertsContainer');
+        mockData.alerts.forEach(alert => {
+            const div = document.createElement('div');
+            div.className = `alert-item ${alert.level}`;
+            div.innerHTML = `
+                <div>
+                    <strong>${alert.message}</strong>
+                </div>
+                <div class="alert-time">${alert.time}</div>
+            `;
+            alertsContainer.appendChild(div);
+        });
+
+        // Predictions Table
+        const tbody = document.getElementById('predictionsBody');
+        mockData.predictions.forEach(pred => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${pred.day}</strong></td>
+                <td><strong>${pred.value.toFixed(1)}m</strong></td>
+                <td>${pred.model}</td>
+                <td><span style="background: linear-gradient(90deg, var(--primary), var(--secondary)); color: white; padding: 5px 10px; border-radius: 5px;">${pred.confidence}%</span></td>
+                <td><span class="prediction-badge ${pred.trend === 'up' ? 'badge-up' : 'badge-down'}">
+                    <i class="fas fa-arrow-${pred.trend === 'up' ? 'up' : 'down'}"></i> ${pred.trend.toUpperCase()}
+                </span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Initial metrics update
+        updateMetrics();
+
+        // Auto-refresh data every 10 seconds
+        setInterval(() => {
+            mockData.waterLevels.shift();
+            mockData.waterLevels.push(mockData.waterLevels[mockData.waterLevels.length - 1] + (Math.random() - 0.5) * 4);
+            updateMetrics();
+        }, 10000);
+    </script>
+</body>
+</html>
