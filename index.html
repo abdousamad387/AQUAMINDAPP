@@ -313,6 +313,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="analytics.html">📈 Analytics</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="map.html">🗺️ Carte</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -333,6 +336,9 @@
                 </button>
                 <button class="btn-hero" onclick="goToForecast()">
                     <i class="fas fa-chart-line"></i> Voir les Prédictions
+                </button>
+                <button class="btn-hero" onclick="goToMap()">
+                    <i class="fas fa-map"></i> Explorer la Carte
                 </button>
             </div>
         </div>
@@ -381,6 +387,14 @@
                         <div class="feature-icon"><i class="fas fa-alert-circle"></i></div>
                         <h3 class="feature-title">Alertes Intelligentes</h3>
                         <p class="feature-text">Notifications en temps réel pour niveaux critiques et anomalies détectées</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon"><i class="fas fa-map-location-dot"></i></div>
+                        <h3 class="feature-title">Carte Interactive</h3>
+                        <p class="feature-text">Visualisation géographique des bassins, stations et réseaux d'eau en temps réel</p>
                     </div>
                 </div>
                 
@@ -468,6 +482,7 @@
                 <a href="dashboard.html">Dashboard</a>
                 <a href="forecast.html">Prédictions</a>
                 <a href="analytics.html">Analytics</a>
+                <a href="map.html">Carte</a>
             </div>
             <p style="color: #999; font-size: 0.9rem;">
                 © 2026 AQUAMIND. Tous droits réservés.
@@ -488,6 +503,10 @@
         
         function goToAnalytics() {
             window.location.href = 'analytics.html';
+        }
+        
+        function goToMap() {
+            window.location.href = 'map.html';
         }
         
         // ========== ANIMATIONS AU SCROLL ==========

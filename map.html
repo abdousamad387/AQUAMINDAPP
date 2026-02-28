@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte Interactive - AQUAMIND</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            color: #333 !important;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: #667eea !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            color: #667eea !important;
+            border-bottom: 2px solid #667eea;
+        }
+
+        /* Main Container */
+        .container-fluid {
+            padding: 0;
+            margin-top: 1rem;
+        }
+
+        /* Map Header */
+        .map-header {
+            background: white;
+            padding: 2rem;
+            margin: 1rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .map-header h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .map-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Map Container */
+        #map {
+            height: 600px;
+            border-radius: 15px;
+            margin: 0 1rem 2rem 1rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            z-index: 500;
+        }
+
+        /* Controls */
+        .map-controls {
+            background: white;
+            padding: 1.5rem;
+            margin: 0 1rem 2rem 1rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group h5 {
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-control {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-control.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-control:not(.active) {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+
+        .btn-control:not(.active):hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* Legend */
+        .map-legend {
+            background: white;
+            padding: 1.5rem;
+            margin: 0 1rem 2rem 1rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .map-legend h5 {
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            border: 2px solid #333;
+        }
+
+        .legend-item.basin .legend-color {
+            background: rgba(102, 126, 234, 0.3);
+            border: 2px solid #667eea;
+        }
+
+        .legend-item.station .legend-color {
+            background: #667eea;
+        }
+
+        .legend-item.tributary .legend-color {
+            background: #764ba2;
+        }
+
+        .legend-item.dam .legend-color {
+            background: #ff6b6b;
+        }
+
+        .legend-text {
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 0 1rem 2rem 1rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* Leaflet Custom Styles */
+        .leaflet-control-zoom {
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .leaflet-top, .leaflet-bottom {
+            z-index: 600;
+        }
+
+        /* Popup Styles */
+        .leaflet-popup-content-wrapper {
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .leaflet-popup-content {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #map {
+                height: 400px;
+                margin: 0 0.5rem 1.5rem 0.5rem;
+            }
+
+            .map-header, .map-controls, .map-legend {
+                margin: 0.5rem;
+            }
+
+            nav {
+                padding: 0.75rem 1rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+
+            .control-buttons {
+                gap: 0.5rem;
+            }
+
+            .btn-control {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                margin: 0 0.5rem 1.5rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-water"></i> AQUAMIND
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="forecast.html"><i class="fas fa-crystal-ball"></i> Prévisions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="analytics.html"><i class="fas fa-brain"></i> Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="map.html"><i class="fas fa-map"></i> Carte</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="map-header">
+            <h1><i class="fas fa-map-location-dot"></i> Carte Interactive des Bassins Hydrographiques</h1>
+            <p>Visualisez les réseaux d'eau, stations de monitoring et bassins versants</p>
+        </div>
+
+        <!-- Map -->
+        <div id="map"></div>
+
+        <!-- Controls -->
+        <div class="map-controls">
+            <div class="control-group">
+                <h5><i class="fas fa-layer-group"></i> Couches Visibles</h5>
+                <div class="control-buttons">
+                    <button class="btn-control active" onclick="toggleLayer('bassins')">
+                        <i class="fas fa-water"></i> Bassins
+                    </button>
+                    <button class="btn-control active" onclick="toggleLayer('stations')">
+                        <i class="fas fa-location-dot"></i> Stations
+                    </button>
+                    <button class="btn-control active" onclick="toggleLayer('reseaux')">
+                        <i class="fas fa-project-diagram"></i> Réseaux
+                    </button>
+                    <button class="btn-control active" onclick="toggleLayer('barrages')">
+                        <i class="fas fa-square"></i> Barrages
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h5><i class="fas fa-magnet"></i> Affichage</h5>
+                <div class="control-buttons">
+                    <button class="btn-control" onclick="fitMapToAllMarkers()">
+                        <i class="fas fa-expand"></i> Ajuster la Vue
+                    </button>
+                    <button class="btn-control" onclick="zoomToBasin('north')">
+                        <i class="fas fa-compass"></i> Bassin Nord
+                    </button>
+                    <button class="btn-control" onclick="zoomToBasin('south')">
+                        <i class="fas fa-compass"></i> Bassin Sud
+                    </button>
+                    <button class="btn-control" onclick="zoomToBasin('east')">
+                        <i class="fas fa-compass"></i> Bassin Est
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="map-legend">
+            <h5><i class="fas fa-key"></i> Légende</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="legend-item basin">
+                        <div class="legend-color"></div>
+                        <span class="legend-text">Bassins Versants</span>
+                    </div>
+                    <div class="legend-item station">
+                        <div class="legend-color"></div>
+                        <span class="legend-text">Stations de Monitoring</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="legend-item tributary">
+                        <div class="legend-color"></div>
+                        <span class="legend-text">Réseaux d'Eau</span>
+                    </div>
+                    <div class="legend-item dam">
+                        <div class="legend-color"></div>
+                        <span class="legend-text">Barrages</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-water"></i></div>
+                <div class="stat-value" id="totalBasins">8</div>
+                <div class="stat-label">Bassins Versants</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-location-dot"></i></div>
+                <div class="stat-value" id="totalStations">24</div>
+                <div class="stat-label">Stations de Monitoring</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
+                <div class="stat-value" id="totalNetworks">12</div>
+                <div class="stat-label">Réseaux d'Eau</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-square"></i></div>
+                <div class="stat-value" id="totalDams">4</div>
+                <div class="stat-label">Barrages</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Map initialization
+        let map = L.map('map').setView([30.5, 0], 5);
+
+        // Base layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Layer groups
+        const layers = {
+            bassins: L.featureGroup(),
+            stations: L.featureGroup(),
+            reseaux: L.featureGroup(),
+            barrages: L.featureGroup()
+        };
+
+        // Add all layers
+        Object.values(layers).forEach(layer => layer.addTo(map));
+
+        // Basins data
+        const basinsData = [
+            {
+                name: 'Bassin du Nil Nord',
+                bounds: [[31.5, -1], [32.5, 1]],
+                color: '#667eea'
+            },
+            {
+                name: 'Bassin du Nil Central',
+                bounds: [[30.5, -0.5], [31.5, 1.5]],
+                color: '#667eea'
+            },
+            {
+                name: 'Bassin du Nil Sud',
+                bounds: [[29, -1], [30, 0.5]],
+                color: '#667eea'
+            },
+            {
+                name: 'Bassin de la Méditerranée',
+                bounds: [[32, 0], [33, 2]],
+                color: '#667eea'
+            },
+            {
+                name: 'Bassin Côtier Est',
+                bounds: [[29, 2], [31, 4]],
+                color: '#667eea'
+            },
+            {
+                name: 'Bassin Côtier Ouest',
+                bounds: [[29, -3], [31, -1]],
+                color: '#667eea'
+            },
+            {
+                name: 'Bassin du Fayoum',
+                bounds: [[29.2, 30.4], [29.6, 31]],
+                color: '#667eea'
+            },
+            {
+                name: 'Bassin de Suez',
+                bounds: [[29.5, 32], [30.5, 33.5]],
+                color: '#667eea'
+            }
+        ];
+
+        // Draw basins
+        basinsData.forEach(basin => {
+            const bounds = [
+                [basin.bounds[0][0], basin.bounds[0][1]],
+                [basin.bounds[1][0], basin.bounds[1][1]]
+            ];
+            const polygon = L.rectangle(bounds, {
+                color: basin.color,
+                weight: 2,
+                opacity: 0.7,
+                fillOpacity: 0.15,
+                dashArray: '5, 5'
+            }).bindPopup(`<b>${basin.name}</b><br>Bassin Versant<br>Superficie: <strong>${Math.random() * 50000 + 5000 | 0} km²</strong>`);
+            
+            polygon.addTo(layers.bassins);
+        });
+
+        // Stations data
+        const stationsData = [
+            { name: 'Station Assouan', coords: [24.0889, 32.8765], status: 'Actif', level: '168.5m' },
+            { name: 'Station Luxor', coords: [25.3265, 32.6396], status: 'Actif', level: '89.3m' },
+            { name: 'Station Qena', coords: [26.1628, 34.2713], status: 'Actif', level: '72.4m' },
+            { name: 'Station Girga', coords: [26.7219, 31.9228], status: 'Actif', level: '45.8m' },
+            { name: 'Station Assiut', coords: [27.1765, 31.1857], status: 'Actif', level: '38.2m' },
+            { name: 'Station Minya', coords: [28.0965, 30.7461], status: 'Actif', level: '32.5m' },
+            { name: 'Station Beni Suef', coords: [29.0576, 31.2998], status: 'Actif', level: '26.1m' },
+            { name: 'Station Fayoum', coords: [29.3091, 30.8412], status: 'Alerte', level: '15.3m' },
+            { name: 'Station Cairo', coords: [30.0444, 31.2357], status: 'Actif', level: '18.7m' },
+            { name: 'Station Alexandria', coords: [31.2001, 29.9187], status: 'Actif', level: '5.2m' },
+            { name: 'Station Port Said', coords: [31.2565, 32.3011], status: 'Actif', level: '0.8m' },
+            { name: 'Station Ismailia', coords: [30.5892, 32.2732], status: 'Actif', level: '3.1m' },
+            { name: 'Station Suez', coords: [29.9668, 32.5428], status: 'Actif', level: '2.4m' },
+            { name: 'Station Baltim', coords: [31.5588, 31.0567], status: 'Actif', level: '4.5m' },
+            { name: 'Station Rosette', coords: [31.4052, 30.4138], status: 'Actif', level: '6.2m' },
+            { name: 'Station Damietta', coords: [31.4169, 31.8039], status: 'Actif', level: '5.8m' },
+            { name: 'Station Asyut Basin', coords: [27.2, 31.3], status: 'Actif', level: '35.4m' },
+            { name: 'Station Abydos', coords: [26.1865, 32.0543], status: 'Maintenance', level: '71.2m' },
+            { name: 'Station Dendera', coords: [26.0877, 32.6736], status: 'Actif', level: '87.1m' },
+            { name: 'Station Edfu', coords: [24.9724, 32.8803], status: 'Actif', level: '157.3m' },
+            { name: 'Station Kom Ombo', coords: [24.4530, 32.9440], status: 'Actif', level: '161.8m' },
+            { name: 'Station New Aswan', coords: [24.1265, 32.7891], status: 'Actif', level: '167.9m' },
+            { name: 'Station Lake Nasser', coords: [23.5, 33.0], status: 'Actif', level: '182.4m' },
+            { name: 'Station Abu Simbel', coords: [22.3469, 31.6056], status: 'Actif', level: '185.2m' }
+        ];
+
+        // Add stations
+        stationsData.forEach((station, idx) => {
+            const icon = L.divIcon({
+                className: 'station-icon',
+                html: `<div style="width: 25px; height: 25px; border-radius: 50%; background: #667eea; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold;"><i class="fas fa-droplet"></i></div>`,
+                iconSize: [25, 25],
+                popupAnchor: [0, -12]
+            });
+
+            const popup = `<b>${station.name}</b><br>
+                           Status: <span style="color: ${station.status === 'Actif' ? '#28a745' : station.status === 'Alerte' ? '#ff9800' : '#ff6b6b'}">${station.status}</span><br>
+                           Niveau d'eau: <strong>${station.level}</strong><br>
+                           Flux: <strong>${(Math.random() * 300 + 100).toFixed(1)} m³/s</strong>`;
+
+            L.marker(station.coords, { icon }).bindPopup(popup).addTo(layers.stations);
+        });
+
+        // Networks (rivers)
+        const networkData = [
+            { coords: [[24, 32.8], [24.5, 32.9], [25, 32.95], [25.5, 33], [26, 32.98], [26.5, 33.05], [27, 33.1]], name: 'Nil Principal Est' },
+            { coords: [[24, 32.8], [24.3, 31.8], [24.5, 31], [25, 30.5], [25.5, 30]], name: 'Nil Occidental' },
+            { coords: [[26, 32.98], [26.5, 32.5], [27, 32], [27.5, 31.5], [28, 31]], name: 'Canal Irrigation Nord' },
+            { coords: [[27, 33.1], [27.5, 33], [28, 32.8], [28.5, 32.5], [29, 32]], name: 'Tributaire Est' },
+            { coords: [[29, 32], [29.5, 31.5], [30, 31], [30.5, 30.5], [31, 30]], name: 'Réseau Delta Nord' },
+            { coords: [[29, 32], [29.2, 32.7], [29.5, 33], [30, 33.3]], name: 'Canal Ismailya' },
+            { coords: [[30, 31], [30.2, 30.5], [30.5, 30], [31, 29.8]], name: 'Réseau Delta Central' },
+            { coords: [[30.5, 30.5], [31, 30], [31.5, 29.8], [32, 29.5]], name: 'Réseau Delta Est' },
+            { coords: [[24.4, 32.85], [24.5, 32.5], [24.6, 32]], name: 'Barrage d\'Assouan - Débit' },
+            { coords: [[30.5, 31], [31, 30.5], [31.5, 30.2], [32, 30]], name: 'Canal Suez-Méditerranée' },
+            { coords: [[29, 30.5], [29.5, 30], [30, 29.5], [30.5, 29]], name: 'Réseau Fayoum' },
+            { coords: [[28.5, 31.5], [29, 31], [29.5, 30.5], [30, 30]], name: 'Réseau Irrigation Central' }
+        ];
+
+        // Add networks
+        networkData.forEach(network => {
+            const polyline = L.polyline(network.coords, {
+                color: '#764ba2',
+                weight: 3,
+                opacity: 0.75,
+                dashArray: '3, 3',
+                smoothFactor: 1
+            }).bindPopup(`<b>${network.name}</b><br>Réseau d'Eau<br>Débit moyen: <strong>${(Math.random() * 200 + 50).toFixed(1)} m³/s</strong>`);
+
+            polyline.addTo(layers.reseaux);
+        });
+
+        // Dams
+        const damsData = [
+            { name: 'Barrage d\'Assouan', coords: [24.0889, 32.8765], capacity: '162 Mds m³', power: '2100 MW' },
+            { name: 'Barrage de Gezira', coords: [30.15, 31.25], capacity: '3 Mds m³', power: '18 MW' },
+            { name: 'Barrage de Fayoum', coords: [29.3091, 30.8412], capacity: '1.8 Mds m³', power: '0 MW' },
+            { name: 'Barrages Delta', coords: [31, 30], capacity: '4.2 Mds m³', power: '45 MW' }
+        ];
+
+        damsData.forEach(dam => {
+            const damIcon = L.divIcon({
+                html: `<div style="width: 30px; height: 30px; background: linear-gradient(135deg, #ff6b6b, #ff8e72); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 2px solid white;"><i class="fas fa-square" style="font-size: 14px;"></i></div>`,
+                iconSize: [30, 30],
+                popupAnchor: [0, -15]
+            });
+
+            const popup = `<b>${dam.name}</b><br>
+                           Capacité: <strong>${dam.capacity}</strong><br>
+                           Production: <strong>${dam.power}</strong><br>
+                           Taux de remplissage: <strong>${(Math.random() * 30 + 70).toFixed(1)}%</strong>`;
+
+            L.marker(dam.coords, { icon: damIcon }).bindPopup(popup).addTo(layers.barrages);
+        });
+
+        // Toggle layers
+        function toggleLayer(layerName) {
+            const button = event.target.closest('.btn-control');
+            const layer = layers[layerName];
+
+            if (map.hasLayer(layer)) {
+                map.removeLayer(layer);
+                button.classList.remove('active');
+            } else {
+                map.addLayer(layer);
+                button.classList.add('active');
+            }
+        }
+
+        // Zoom functions
+        function fitMapToAllMarkers() {
+            let group = new L.featureGroup();
+            Object.values(layers).forEach(layer => {
+                layer.eachLayer(m => group.addLayer(m));
+            });
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+
+        function zoomToBasin(basin) {
+            const basinBounds = {
+                north: [[32, 0], [33, 2]],
+                south: [[29, -1], [30, 0.5]],
+                east: [[29, 2], [31, 4]]
+            };
+
+            if (basinBounds[basin]) {
+                const bounds = L.latLngBounds(basinBounds[basin]);
+                map.fitBounds(bounds.pad(0.15));
+            }
+        }
+
+        // Initial fit
+        setTimeout(fitMapToAllMarkers, 500);
+
+        // Update stats
+        document.getElementById('totalBasins').textContent = basinsData.length;
+        document.getElementById('totalStations').textContent = stationsData.length;
+        document.getElementById('totalNetworks').textContent = networkData.length;
+        document.getElementById('totalDams').textContent = damsData.length;
+    </script>
+</body>
+</html>
