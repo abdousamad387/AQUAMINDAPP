@@ -3,686 +3,461 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AQUAMIND - AI Analytics</title>
+    <title>AQUAMIND - Analyse IA | Performance Modèles</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <style>
-        :root {
-            --primary: #0084d6;
-            --secondary: #00c9e7;
-            --dark: #1a1a2e;
-            --light: #f8f9fa;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             font-family: 'Poppins', sans-serif;
-            background: var(--light);
-            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
-
-        /* HEADER */
-        .analytics-header {
-            background: linear-gradient(135deg, var(--dark), var(--primary));
-            color: white;
-            padding: 30px 20px;
-            box-shadow: 0 4px 15px rgba(0, 132, 214, 0.2);
-        }
-
-        .analytics-header h1 {
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
-            font-weight: 900;
-            margin-bottom: 10px;
-        }
-
-        /* MAIN */
-        .analytics-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 25px;
-        }
-
-        .section h2 {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--dark);
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--primary);
-        }
-
-        /* STATS GRID */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
+        
+        .navbar { background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 1rem 2rem !important; }
+        .navbar-brand { font-size: 1.8rem; font-weight: 800; color: #fff !important; }
+        .nav-link { color: #fff !important; font-weight: 600; margin-left: 1.5rem; transition: all 0.3s; }
+        .nav-link:hover, .nav-link.active { color: #00bcd4 !important; border-bottom: 2px solid #00bcd4; }
+        
+        .container-main { max-width: 1400px; margin: 0 auto; padding: 2rem 1rem; }
+        .page-title { color: #fff; font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        
         .stat-card {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 25px;
+            background: #fff;
             border-radius: 12px;
-            text-align: center;
-            transition: all 0.3s ease;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+            transition: all 0.3s;
         }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 132, 214, 0.3);
+        
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 12px 35px rgba(0,0,0,0.2); }
+        
+        .stat-label { font-size: 0.9rem; color: #999; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .stat-value { font-size: 2.5rem; font-weight: 800; color: #1e293b; margin-bottom: 0.3rem; }
+        .stat-change { font-size: 0.85rem; color: #10b981; font-weight: 600; }
+        
+        .model-detail {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
-
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .stat-value {
-            font-size: 2.2rem;
-            font-weight: 900;
-            margin-bottom: 5px;
-        }
-
-        .stat-change {
-            font-size: 0.85rem;
-            opacity: 0.8;
-        }
-
-        /* MODEL PERFORMANCE */
-        .performance-grid {
+        
+        .model-header { font-size: 1.3rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #f0f0f0; }
+        
+        .metric-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
-
-        .perf-card {
-            background: linear-gradient(135deg, rgba(0, 132, 214, 0.1), rgba(0, 201, 231, 0.1));
-            padding: 25px;
-            border-radius: 12px;
-            border: 2px solid var(--primary);
-            transition: all 0.3s ease;
-        }
-
-        .perf-card:hover {
-            border-color: var(--secondary);
-        }
-
-        .perf-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .perf-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .perf-badge {
-            background: var(--primary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        .perf-metric {
-            margin-bottom: 15px;
-        }
-
-        .metric-name {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .metric-bar {
-            background: #e0e0e0;
-            height: 8px;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .metric-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 10px;
-            transition: width 0.3s ease;
-        }
-
-        .metric-percent {
-            font-size: 0.85rem;
-            color: var(--primary);
-            font-weight: 700;
-            margin-top: 5px;
-        }
-
-        /* MATRIX TABLE */
-        .confusion-matrix {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-
-        .confusion-matrix th,
-        .confusion-matrix td {
-            padding: 12px;
+        
+        .metric-box {
+            background: #f8f8f8;
+            padding: 1rem;
+            border-radius: 8px;
             text-align: center;
-            border: 1px solid #e0e0e0;
+        }
+        
+        .metric-name { font-size: 0.85rem; color: #666; margin-bottom: 0.5rem; }
+        .metric-value { font-size: 2rem; font-weight: 800; color: #667eea; }
+        
+        .chart-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+        
+        .chart-title { font-size: 1.2rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem; }
+        
+        .confusion-matrix {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .matrix-table {
+            margin: 1rem 0;
+            border-collapse: collapse;
+        }
+        
+        .matrix-table td {
+            padding: 0.8rem;
+            text-align: center;
+            border: 1px solid #ddd;
             font-weight: 600;
+            min-width: 60px;
         }
-
-        .confusion-matrix th {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
+        
+        .matrix-table td.header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
         }
-
-        .matrix-cell {
-            background: linear-gradient(135deg, rgba(0, 132, 214, 0.1), rgba(0, 201, 231, 0.05));
-        }
-
-        .matrix-high {
-            background: linear-gradient(135deg, rgba(46, 204, 113, 0.3), rgba(46, 204, 113, 0.1));
-        }
-
-        .matrix-low {
-            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(231, 76, 60, 0.05));
-        }
-
-        /* FEATURE IMPORTANCE */
-        .feature-bar {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .feature-name {
-            min-width: 150px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .feature-container {
-            flex: 1;
-            background: #f0f0f0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 0 15px;
-            height: 25px;
-        }
-
-        .feature-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        .feature-percent {
-            min-width: 40px;
-            text-align: right;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        /* CHART CONTAINER */
-        .chart-container {
-            position: relative;
-            height: 350px;
-            margin-bottom: 30px;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .performance-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .chart-container {
-                height: 280px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .analytics-header h1 {
-                font-size: 1.5rem;
-            }
-
-            .section {
-                padding: 15px;
-            }
-
-            .feature-name {
-                min-width: 100px;
-                font-size: 0.9rem;
-            }
-
-            .confusion-matrix th,
-            .confusion-matrix td {
-                padding: 8px;
-                font-size: 0.85rem;
-            }
-        }
-
-        .tab-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
+        
+        .matrix-table td.data-true { background: #d4edda; }
+        .matrix-table td.data-false { background: #f8d7da; }
+        
         .tab-btn {
-            padding: 10px 20px;
-            border: 2px solid var(--primary);
-            background: transparent;
-            color: var(--primary);
-            border-radius: 25px;
+            background: #f0f0f0;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-weight: 600;
+            margin-right: 0.5rem;
+            transition: all 0.3s;
         }
-
+        
         .tab-btn.active {
-            background: var(--primary);
-            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
         }
-
-        .tab-btn:hover {
-            background: var(--primary);
-            color: white;
+        
+        .tab-btn:hover { transform: translateY(-2px); }
+        
+        @media (max-width: 768px) {
+            .page-title { font-size: 1.8rem; }
+            .stat-value { font-size: 1.8rem; }
+            .metric-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <!-- HEADER -->
-    <div class="analytics-header">
-        <div class="analytics-container">
-            <h1>
-                <i class="fas fa-brain"></i> Analytique & Intelligence Artificielle
-            </h1>
-            <p style="margin: 10px 0; opacity: 0.9;">Tableau de bord complet de la performance des modèles</p>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html"><i class="fas fa-water"></i> AQUAMIND</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="dashboard.html">📊 Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="forecast.html">🔮 Prédictions</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="analytics.html">📈 Analytics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html">🏠 Accueil</a></li>
+                </ul>
+            </div>
         </div>
-    </div>
+    </nav>
 
     <!-- MAIN -->
-    <div class="analytics-container">
+    <div class="container-main">
+        <h1 class="page-title">📊 Analyse IA & Performance des Modèles</h1>
+
         <!-- OVERVIEW STATS -->
-        <div class="section">
-            <h2>
-                <i class="fas fa-chart-bar"></i> Vue d'Ensemble
-            </h2>
-            <div class="stats-grid">
+        <div class="row">
+            <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
                     <div class="stat-label">Précision Globale</div>
-                    <div class="stat-value">91.2%</div>
-                    <div class="stat-change"><i class="fas fa-arrow-up"></i> +1.5% cette semaine</div>
+                    <div class="stat-value">92.8%</div>
+                    <div class="stat-change">↑ +2.1% vs semaine dernière</div>
                 </div>
-
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-label">Erreur Moyenne</div>
+                    <div class="stat-value">1.24 cm</div>
+                    <div class="stat-change">↓ -0.3cm vs semaine dernière</div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-label">F1 Score</div>
+                    <div class="stat-value">0.915</div>
+                    <div class="stat-change">↑ Excellente performance</div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
                     <div class="stat-label">Modèles Actifs</div>
                     <div class="stat-value">5</div>
-                    <div class="stat-change"><i class="fas fa-check"></i> Tous opérationnels</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Temps d'Inférence</div>
-                    <div class="stat-value">245ms</div>
-                    <div class="stat-change"><i class="fas fa-tachometer-alt"></i> Optimal</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Prédictions/Jour</div>
-                    <div class="stat-value">14,847</div>
-                    <div class="stat-change"><i class="fas fa-chart-line"></i> +8.3% hier</div>
+                    <div class="stat-change">✅ Tous opérationnels</div>
                 </div>
             </div>
         </div>
 
-        <!-- MODEL PERFORMANCE -->
-        <div class="section">
-            <h2>
-                <i class="fas fa-robot"></i> Performance des Modèles
-            </h2>
-            <div class="performance-grid">
-                <div class="perf-card">
-                    <div class="perf-header">
-                        <div class="perf-title">LSTM</div>
-                        <div class="perf-badge">🥇 #1</div>
-                    </div>
-                    <div class="perf-metric">
-                        <div class="metric-name">Précision</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" style="width: 94%"></div>
-                        </div>
-                        <div class="metric-percent">94%</div>
-                    </div>
-                    <div class="perf-metric">
-                        <div class="metric-name">Recall</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" style="width: 91%"></div>
-                        </div>
-                        <div class="metric-percent">91%</div>
-                    </div>
-                    <div class="perf-metric">
-                        <div class="metric-name">F1-Score</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" style="width: 92.5%"></div>
-                        </div>
-                        <div class="metric-percent">92.5%</div>
-                    </div>
+        <!-- MODEL DETAILS -->
+        <h2 class="page-title">🤖 Performance Détaillée des Modèles</h2>
+        
+        <!-- LSTM -->
+        <div class="model-detail">
+            <div class="model-header">⚙️ LSTM (Long Short-Term Memory)</div>
+            <div class="metric-row">
+                <div class="metric-box">
+                    <div class="metric-name">Précision</div>
+                    <div class="metric-value">94%</div>
                 </div>
-
-                <div class="perf-card">
-                    <div class="perf-header">
-                        <div class="perf-title">Transformer</div>
-                        <div class="perf-badge">🥈 #2</div>
-                    </div>
-                    <div class="perf-metric">
-                        <div class="metric-name">Précision</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" style="width: 91%"></div>
-                        </div>
-                        <div class="metric-percent">91%</div>
-                    </div>
-                    <div class="perf-metric">
-                        <div class="metric-name">Recall</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" style="width: 88%"></div>
-                        </div>
-                        <div class="metric-percent">88%</div>
-                    </div>
-                    <div class="perf-metric">
-                        <div class="metric-name">F1-Score</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" style="width: 89.5%"></div>
-                        </div>
-                        <div class="metric-percent">89.5%</div>
-                    </div>
+                <div class="metric-box">
+                    <div class="metric-name">Recall</div>
+                    <div class="metric-value">92%</div>
                 </div>
-
-                <div class="perf-card">
-                    <div class="perf-header">
-                        <div class="perf-title">ConvLSTM</div>
-                        <div class="perf-badge">🥉 #3</div>
-                    </div>
-                    <div class="perf-metric">
-                        <div class="metric-name">Précision</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" style="width: 89%"></div>
-                        </div>
-                        <div class="metric-percent">89%</div>
-                    </div>
-                    <div class="perf-metric">
-                        <div class="metric-name">Recall</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" style="width: 86%"></div>
-                        </div>
-                        <div class="metric-percent">86%</div>
-                    </div>
-                    <div class="perf-metric">
-                        <div class="metric-name">F1-Score</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" style="width: 87.5%"></div>
-                        </div>
-                        <div class="metric-percent">87.5%</div>
-                    </div>
+                <div class="metric-box">
+                    <div class="metric-name">F1 Score</div>
+                    <div class="metric-value">0.93</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-name">MAE</div>
+                    <div class="metric-value">1.2 cm</div>
                 </div>
             </div>
+        </div>
 
-            <!-- CONFUSION MATRIX -->
-            <h3 style="margin-top: 30px; margin-bottom: 20px;">Matrice de Confusion (Ensemble)</h3>
-            <table class="confusion-matrix">
-                <thead>
-                    <tr>
-                        <th colspan="2">Matrice</th>
-                        <th colspan="3">Prédiction Réelle</th>
-                    </tr>
-                    <tr>
-                        <th>Classe</th>
-                        <th>Total</th>
-                        <th>Hausse</th>
-                        <th>Stable</th>
-                        <th>Baisse</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Hausse</strong></td>
-                        <td>410</td>
-                        <td class="matrix-cell matrix-high"><strong>392</strong></td>
-                        <td class="matrix-cell"><strong>15</strong></td>
-                        <td class="matrix-cell matrix-low"><strong>3</strong></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Stable</strong></td>
-                        <td>385</td>
-                        <td class="matrix-cell"><strong>8</strong></td>
-                        <td class="matrix-cell matrix-high"><strong>368</strong></td>
-                        <td class="matrix-cell"><strong>9</strong></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Baisse</strong></td>
-                        <td>405</td>
-                        <td class="matrix-cell matrix-low"><strong>2</strong></td>
-                        <td class="matrix-cell"><strong>18</strong></td>
-                        <td class="matrix-cell matrix-high"><strong>385</strong></td>
-                    </tr>
-                </tbody>
+        <!-- TRANSFORMER -->
+        <div class="model-detail">
+            <div class="model-header">⚡ Transformer</div>
+            <div class="metric-row">
+                <div class="metric-box">
+                    <div class="metric-name">Précision</div>
+                    <div class="metric-value">91%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-name">Recall</div>
+                    <div class="metric-value">90%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-name">F1 Score</div>
+                    <div class="metric-value">0.905</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-name">MAE</div>
+                    <div class="metric-value">1.5 cm</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONVLSTM -->
+        <div class="model-detail">
+            <div class="model-header">📦 ConvLSTM (Convolutional LSTM)</div>
+            <div class="metric-row">
+                <div class="metric-box">
+                    <div class="metric-name">Précision</div>
+                    <div class="metric-value">89%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-name">Recall</div>
+                    <div class="metric-value">88%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-name">F1 Score</div>
+                    <div class="metric-value">0.885</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-name">MAE</div>
+                    <div class="metric-value">1.8 cm</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARTS -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="chart-box">
+                    <div class="chart-title">📊 Comparaison des Modèles</div>
+                    <canvas id="modelsComparison"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="chart-box">
+                    <div class="chart-title">📈 Performance au Fil du Temps</div>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONFUSION MATRIX -->
+        <div class="confusion-matrix">
+            <div class="model-header">🎯 Matrice de Confusion (LSTM)</div>
+            <table class="matrix-table">
+                <tr>
+                    <td class="header">Réel \ Prédit</td>
+                    <td class="header">Bas</td>
+                    <td class="header">Normal</td>
+                    <td class="header">Haut</td>
+                </tr>
+                <tr>
+                    <td class="header">Bas</td>
+                    <td class="data-true">285</td>
+                    <td>15</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td class="header">Normal</td>
+                    <td>18</td>
+                    <td class="data-true">892</td>
+                    <td>25</td>
+                </tr>
+                <tr>
+                    <td class="header">Haut</td>
+                    <td>3</td>
+                    <td>22</td>
+                    <td class="data-true">311</td>
+                </tr>
             </table>
         </div>
 
         <!-- FEATURE IMPORTANCE -->
-        <div class="section">
-            <h2>
-                <i class="fas fa-list"></i> Importance des Features
-            </h2>
-            <div class="feature-bar">
-                <div class="feature-name">Niveau n-1</div>
-                <div class="feature-container">
-                    <div class="feature-fill" style="width: 95%">95%</div>
-                </div>
-                <div class="feature-percent">0.95</div>
-            </div>
-            <div class="feature-bar">
-                <div class="feature-name">Pluie 7j</div>
-                <div class="feature-container">
-                    <div class="feature-fill" style="width: 78%">78%</div>
-                </div>
-                <div class="feature-percent">0.78</div>
-            </div>
-            <div class="feature-bar">
-                <div class="feature-name">Tendance</div>
-                <div class="feature-container">
-                    <div class="feature-fill" style="width: 64%">64%</div>
-                </div>
-                <div class="feature-percent">0.64</div>
-            </div>
-            <div class="feature-bar">
-                <div class="feature-name">Saisonnier</div>
-                <div class="feature-container">
-                    <div class="feature-fill" style="width: 52%">52%</div>
-                </div>
-                <div class="feature-percent">0.52</div>
-            </div>
-            <div class="feature-bar">
-                <div class="feature-name">Température</div>
-                <div class="feature-container">
-                    <div class="feature-fill" style="width: 38%">38%</div>
-                </div>
-                <div class="feature-percent">0.38</div>
-            </div>
-            <div class="feature-bar">
-                <div class="feature-name">Humidité</div>
-                <div class="feature-container">
-                    <div class="feature-fill" style="width: 25%">25%</div>
-                </div>
-                <div class="feature-percent">0.25</div>
-            </div>
+        <div class="chart-box">
+            <div class="chart-title">⭐ Importance des Features (Variables)</div>
+            <canvas id="featureChart"></canvas>
         </div>
 
-        <!-- PERFORMANCE OVER TIME -->
-        <div class="section">
-            <h2>
-                <i class="fas fa-history"></i> Tendance de Performance
-            </h2>
-            <div class="tab-buttons">
-                <button class="tab-btn active">7 Jours</button>
-                <button class="tab-btn">30 Jours</button>
-                <button class="tab-btn">90 Jours</button>
-                <button class="tab-btn">Année</button>
-            </div>
-            <div class="chart-container">
-                <canvas id="performanceChart"></canvas>
-            </div>
-        </div>
-
-        <!-- ERROR ANALYSIS -->
-        <div class="section">
-            <h2>
-                <i class="fas fa-bug"></i> Analyse des Erreurs
-            </h2>
-            <div class="chart-container">
-                <canvas id="errorChart"></canvas>
-            </div>
-        </div>
-
-        <!-- LATENCY ANALYSIS -->
-        <div class="section">
-            <h2>
-                <i class="fas fa-stopwatch"></i> Analyse de Latence
-            </h2>
-            <div class="chart-container">
-                <canvas id="latencyChart"></canvas>
-            </div>
+        <!-- ERROR DISTRIBUTION -->
+        <div class="chart-box">
+            <div class="chart-title">📊 Distribution des Erreurs (Résidus)</div>
+            <canvas id="errorChart"></canvas>
         </div>
     </div>
 
-    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
-        // Performance Over Time
-        new Chart(document.getElementById('performanceChart'), {
-            type: 'line',
-            data: {
-                labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
-                datasets: [
-                    {
-                        label: 'LSTM',
-                        data: [93.5, 93.8, 94.1, 94.0, 94.2, 94.3, 94.0],
-                        borderColor: '#0084d6',
-                        backgroundColor: 'rgba(0, 132, 214, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3
-                    },
-                    {
-                        label: 'Transformer',
-                        data: [90.5, 90.8, 91.0, 91.1, 91.0, 91.2, 91.0],
-                        borderColor: '#00c9e7',
-                        backgroundColor: 'rgba(0, 201, 231, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3
-                    },
-                    {
-                        label: 'Ensemble',
-                        data: [91.0, 91.3, 91.5, 91.4, 91.6, 91.8, 91.2],
-                        borderColor: '#2ecc71',
-                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                        borderWidth: 3,
-                        tension: 0.3
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { y: { min: 88, max: 95 } }
-            }
-        });
+        let charts = {};
 
-        // Error Analysis
-        new Chart(document.getElementById('errorChart'), {
-            type: 'bar',
-            data: {
-                labels: ['MAE <0.5', '0.5-1m', '1-2m', '2-3m', '>3m'],
-                datasets: [{
-                    label: 'Nombre d\'erreurs',
-                    data: [450, 320, 180, 45, 8],
-                    backgroundColor: ['#2ecc71', '#f39c12', '#e74c3c', '#c0392b', '#a93226']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true } }
-            }
-        });
+        // ========== INIT GRAPHIQUES ==========
+        function initCharts() {
+            initModelsComparison();
+            initPerformanceChart();
+            initFeatureChart();
+            initErrorChart();
+        }
 
-        // Latency Analysis
-        new Chart(document.getElementById('latencyChart'), {
-            type: 'box',
-            data: {
-                labels: ['LSTM', 'Transformer', 'ConvLSTM', 'GNN', 'RL'],
-                datasets: [{
-                    label: 'Latence (ms)',
-                    data: [[200, 220, 245, 260, 280], [150, 180, 210, 230, 250], [180, 200, 235, 255, 270], [160, 190, 220, 240, 260], [170, 200, 235, 255, 280]],
-                    backgroundColor: 'rgba(0, 132, 214, 0.2)',
-                    borderColor: '#0084d6',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-
-        // Tab buttons functionality
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
+        function initModelsComparison() {
+            const ctx = document.getElementById('modelsComparison').getContext('2d');
+            
+            charts.comparison = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Précision', 'Recall', 'F1 Score', 'Vitesse', 'Stabilité'],
+                    datasets: [
+                        {
+                            label: 'LSTM',
+                            data: [94, 92, 93, 85, 90],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Transformer',
+                            data: [91, 90, 90.5, 72, 88],
+                            borderColor: '#764ba2',
+                            backgroundColor: 'rgba(118, 75, 162, 0.2)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'ConvLSTM',
+                            data: [89, 88, 88.5, 80, 86],
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { r: { beginAtZero: true, max: 100 } }
+                }
             });
-        });
+        }
+
+        function initPerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            charts.performance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Sem. 1', 'Sem. 2', 'Sem. 3', 'Sem. 4', 'Sem. 5', 'Sem. 6'],
+                    datasets: [
+                        {
+                            label: 'LSTM',
+                            data: [90, 91, 92, 93, 93.5, 94],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Transformer',
+                            data: [88, 89, 89.5, 90, 90.5, 91],
+                            borderColor: '#764ba2',
+                            backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: { y: { beginAtZero: false, min: 85, max: 95 } }
+                }
+            });
+        }
+
+        function initFeatureChart() {
+            const ctx = document.getElementById('featureChart').getContext('2d');
+            
+            charts.features = new Chart(ctx, {
+                type: 'barH',
+                data: {
+                    labels: ['Niveau antérieur', 'Tendance', 'Pluie', 'Température', 'Saisonnalité', 'Débit'],
+                    datasets: [{
+                        label: 'Importance',
+                        data: [42, 28, 18, 8, 2, 2],
+                        backgroundColor: ['#667eea', '#764ba2', '#f59e0b', '#10b981', '#00bcd4', '#ef4444'],
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, max: 50 } }
+                }
+            });
+        }
+
+        function initErrorChart() {
+            const ctx = document.getElementById('errorChart').getContext('2d');
+            
+            charts.errors = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['< 0.5cm', '0.5-1cm', '1-1.5cm', '1.5-2cm', '2-3cm', '> 3cm'],
+                    datasets: [{
+                        label: 'Nombre d\'erreurs',
+                        data: [245, 358, 190, 78, 25, 4],
+                        backgroundColor: ['#10b981', '#667eea', '#f59e0b', '#ef4444', '#ef4444', '#ef4444'],
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // ========== INIT ==========
+        document.addEventListener('DOMContentLoaded', initCharts);
     </script>
 </body>
 </html>
